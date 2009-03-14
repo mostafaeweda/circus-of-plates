@@ -87,6 +87,9 @@ public class QueueImpl implements Externalizable {
 		return list.size();
 	}
 
+	/**
+	 * reads the queue from a stream
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void readExternal(ObjectInput in) throws IOException,
@@ -94,6 +97,9 @@ public class QueueImpl implements Externalizable {
 		list = (LinkedList<Plate>) in.readObject();
 	}
 
+	/**
+	 * writes the queue to s stream 
+	 */
 	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
 		out.writeObject(list);

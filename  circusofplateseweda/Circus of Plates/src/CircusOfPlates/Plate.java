@@ -161,6 +161,10 @@ public class Plate implements Externalizable {
 		plateSpacing = spacing;
 	}
 
+	/**
+	 * reads the object from a stream
+	 * @param in the input stream to read the object from
+	 */
 	@Override
 	public void readExternal(ObjectInput in) throws IOException,
 			ClassNotFoundException {
@@ -168,6 +172,10 @@ public class Plate implements Externalizable {
 		plate = (RectangleShape) in.readObject();
 	}
 
+	/**
+	 * writes the plate to a stream
+	 * @param out the output stream to write the object in
+	 */
 	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
 		out.writeInt(plateSpacing);
