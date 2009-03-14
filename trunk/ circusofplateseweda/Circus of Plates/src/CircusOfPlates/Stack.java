@@ -4,15 +4,32 @@ import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.Iterator;
 
-
+/**
+ * The class is designed to be generically used for multiple stack usages
+ * @author Mostafa Mahmoud Mahmoud Eweda
+ * @since JDK 1.6
+ * @see ArrayList
+ * @param <E> the type of the data to be represented using the class
+ */
 public class Stack<E> {
 
+	/**
+	 * The place holder of the data
+	 * All the stack operations are delegated to it
+	 */
 	private ArrayList<E> data;
 
+	/**
+	 * creates a stack with 10 elements initially
+	 */
 	public Stack() {
 		data = new ArrayList<E>();
 	}
 
+	/**
+	 * create a stack with the given size
+	 * @param size the initial size of the stack
+	 */
 	public Stack(int size) {
 		data = new ArrayList<E>(size);
 	}

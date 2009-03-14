@@ -170,7 +170,7 @@ public class PlateSky {
 	/**
 	 * sets the speed of the sky updating by increasing the update step
 	 * @param step the new step to be proessed in next update areas
-	 * @see #updateStep
+	 * @see #updateStep 
 	 */
 	public static void setSpeed(int step) {
 		updateStep = step;

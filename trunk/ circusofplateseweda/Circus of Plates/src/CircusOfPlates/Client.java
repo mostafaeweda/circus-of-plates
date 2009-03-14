@@ -35,11 +35,16 @@ public class Client {
 		this.hostIP = hostIP;
 	}
 
+	/**
+	 * runs the client in the networking thread
+	 * 
+	 * @throws Exception
+	 */
 	public void runClient() throws Exception {
-			connection = new Socket(InetAddress.getByName(hostIP), 12345);
-			getStreams();
-			processConnection();
-			closeConnection();
+		connection = new Socket(InetAddress.getByName(hostIP), 12345);
+		getStreams();
+		processConnection();
+		closeConnection();
 	}
 
 	private void getStreams() {
@@ -53,6 +58,9 @@ public class Client {
 		}
 	}
 
+	/**
+	 * close the connection when done
+	 */
 	private void closeConnection() {
 		try {
 			input.close();
@@ -62,6 +70,9 @@ public class Client {
 		}
 	}
 
+	/**
+	 * process the connection by receiving messages and do resulting actions
+	 */
 	private void processConnection() {
 		Object o = null;
 		try {
@@ -70,11 +81,12 @@ public class Client {
 				System.out.println("fee 7aga gat le el client");
 				if (o instanceof PlateBar[]) {
 					final PlateBar[] current = (PlateBar[]) o;
-					Display.getDefault().syncExec(new Runnable(){
+					Display.getDefault().syncExec(new Runnable() {
 						@Override
 						public void run() {
 							facade.setPlateBars(current);
-						}});
+						}
+					});
 				}
 			} while (o != null);
 
@@ -85,10 +97,18 @@ public class Client {
 		}
 	}
 
+	/**
+	 * returns true if the client is the active one
+	 * @return
+	 */
 	public boolean isWorking() {
 		return working;
 	}
 
+	/**
+	 * send data the server
+	 * @param obj the object to be sent to the server
+	 */
 	public void sendData(Object obj) {
 		try {
 			output.writeObject(obj);

@@ -15,7 +15,7 @@ import Paint.Shapes.LineShape;
 /**
  * The Player class handles all the operations supported by a player
  * it also contains the player internal data managed by creators of the player
- * 
+ *  
  * @author Mostafa Mahmod Mahmod Eweda
  * @version 1.0
  * @see Stack
