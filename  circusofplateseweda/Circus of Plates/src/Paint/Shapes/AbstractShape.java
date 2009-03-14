@@ -19,36 +19,17 @@ import Paint.Constants;
 
 /**
  * provides a default behavior for the shapes
- * @author  Mostafa Eweda & Mohammed Abd El Salam
+ * @author  Mostafa Mahmoud Mahmoud Eweda
  * @version  1.0
  * @since  JDK 1.6
  */
 public abstract class AbstractShape implements ShapeIF {
 
-	/**
-	 * @uml.property  name="color"
-	 */
 	protected Color color;
-	/**
-	 * @uml.property  name="currentState"
-	 * @uml.associationEnd  
-	 */
 	private ShapeState currentState;
-	/**
-	 * @uml.property  name="selected"
-	 */
 	protected boolean selected;
-	/**
-	 * @uml.property  name="filled"
-	 */
 	protected boolean filled;
-	/**
-	 * @uml.property  name="points"
-	 */
 	protected ArrayList<Point> points;
-	/**
-	 * @uml.property  name="width"
-	 */
 	protected int width;
 
 	public AbstractShape() {
@@ -57,27 +38,18 @@ public abstract class AbstractShape implements ShapeIF {
 	}
 
 	/**
-	 * @return
-	 * @uml.property  name="color"
+	 * @return the color of the shape
 	 */
 	@Override
 	public final Color getColor() {
 		return color;
 	}
 
-	/**
-	 * @param color
-	 * @uml.property  name="color"
-	 */
 	@Override
 	public final void setColor(Color color) {
 		this.color = color;
 	}
 
-	/**
-	 * @return
-	 * @uml.property  name="selected"
-	 */
 	@Override
 	public final boolean isSelected() {
 		return selected;
@@ -94,14 +66,16 @@ public abstract class AbstractShape implements ShapeIF {
 	}
 
 	/**
-	 * @return
-	 * @uml.property  name="points"
+	 * @return list of points forming the shape
 	 */
 	@Override
 	public final ArrayList<Point> getPoints() {
 		return points;
 	}
 
+	/**
+	 * @return the number of added points till now
+	 */
 	public int getAddedPoints() {
 		return points.size();
 	}
@@ -223,7 +197,6 @@ public abstract class AbstractShape implements ShapeIF {
 
 	/**
 	 * @param width
-	 * @uml.property  name="width"
 	 */
 	public final void setWidth(int width) {
 		this.width = width;
@@ -241,8 +214,7 @@ public abstract class AbstractShape implements ShapeIF {
 	}
 
 	/**
-	 * @return
-	 * @uml.property  name="filled"
+	 * @return true if the shape is filled
 	 */
 	public boolean getFilled() {
 		return filled;
@@ -267,10 +239,6 @@ public abstract class AbstractShape implements ShapeIF {
 			throw new IllegalArgumentException();
 	}
 
-	/**
-	 * @param filled
-	 * @uml.property  name="filled"
-	 */
 	public void setFilled(boolean filled) {
 		this.filled = filled;
 	}
@@ -300,12 +268,8 @@ public abstract class AbstractShape implements ShapeIF {
 		}
 
 	}
-	/**
-	 * @return
-	 * @uml.property  name="width"
-	 */
+
 	public final int getWidth(){
 		return width;
-		
 	}
 }

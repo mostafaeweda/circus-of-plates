@@ -134,7 +134,7 @@ public class CircusUI implements Observer {
 		};
 	}
 
-	private void run() {
+	void run() {
 		last = new Point(0, 0);
 		players = new ArrayList<Player>(2);
 		display = new Display();
@@ -738,10 +738,6 @@ public class CircusUI implements Observer {
 		});
 		shell.addTraverseListener(transientTraverser);
 		currentComposite = composite;
-	}
-
-	public static void main(String[] args) {
-		CircusUI.getInstance().run();
 	}
 
 	public void setPlateBars(PlateBar[] current) {

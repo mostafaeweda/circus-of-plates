@@ -6,7 +6,7 @@ import org.eclipse.swt.graphics.Point;
 
 /**
  * Contains the full math behavior of the drawing application
- * @author Mostafa Eweda & Mohammed Abd El Salam
+ * @author  Mostafa Mahmoud Mahmoud Eweda
  * @version 1.0
  * @since JDK 1.6
  */

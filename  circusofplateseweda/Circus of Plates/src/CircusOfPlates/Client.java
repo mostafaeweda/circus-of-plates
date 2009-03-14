@@ -98,8 +98,7 @@ public class Client {
 	}
 
 	/**
-	 * returns true if the client is the active one
-	 * @return
+	 * @return true if the client is the active one
 	 */
 	public boolean isWorking() {
 		return working;

@@ -11,7 +11,7 @@ import org.eclipse.swt.graphics.Rectangle;
  * @see AbstractShape   provides the default implementations for the shapes
  * @see Externalizable
  * @see Cloneable
- * @author   Mostafa Eweda & Mohammed Abd El Salam
+ * @author  Mostafa Mahmoud Mahmoud Eweda
  * @version   1.0
  * @since   JDK 1.6
  */
@@ -44,14 +44,12 @@ public interface ShapeIF extends Externalizable, Cloneable {
 	/**
 	 * returns the color of the shape
 	 * @return   the color of the shape
-	 * @uml.property  name="color"
 	 */
 	public Color getColor();
 
 	/**
 	 * sets the current color of the shape
 	 * @param color   the color to be changed
-	 * @uml.property  name="color"
 	 */
 	public void setColor(Color color);
 
@@ -119,7 +117,6 @@ public interface ShapeIF extends Externalizable, Cloneable {
 	
 	/**
 	 * @param width   the width of the line the shape should be drawn with
-	 * @uml.property  name="width"
 	 */
 	public void setWidth(int width);
 
@@ -131,14 +128,12 @@ public interface ShapeIF extends Externalizable, Cloneable {
 
 	/**
 	 * @return   true if the shape if filled
-	 * @uml.property  name="filled"
 	 */
 	public boolean getFilled();
 
 	/**
 	 * sets the shape to be filled or not
 	 * @param  filled
-	 * @uml.property  name="filled"
 	 */
 	public void setFilled(boolean filled);
 
@@ -156,7 +151,6 @@ public interface ShapeIF extends Externalizable, Cloneable {
 
 	/**
 	 * @return   the width of the shape
-	 * @uml.property  name="width"
 	 */
 	public int getWidth();
 }

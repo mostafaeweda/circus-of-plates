@@ -141,7 +141,7 @@ public class Server {
 
 	/**
 	 * checks if the current program is running as a server
-	 * @return
+	 * @return true if the current running system is server
 	 */
 	public boolean isWorking() {
 		return working;

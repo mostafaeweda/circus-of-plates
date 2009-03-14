@@ -102,7 +102,8 @@ public class Plate implements Externalizable {
 
 	/**
 	 * shifts the plate horizontally and vertically with the required distance; mainly called by the sky
-	 * @param updateStep the step the plate should be shifted with
+	 * @param x the step the plate should be shifted with horizontally
+	 * @param y the step the plate should be shifted with vertically
 	 * @see PlateSky
 	 */
 	public void shift(int x, int y) {
