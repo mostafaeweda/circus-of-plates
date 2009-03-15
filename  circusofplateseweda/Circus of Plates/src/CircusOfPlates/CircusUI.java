@@ -1,5 +1,9 @@
 package CircusOfPlates;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Observable;
@@ -39,6 +43,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
@@ -134,7 +139,7 @@ public class CircusUI implements Observer {
 		};
 	}
 
-	void run() {
+	public void run() {
 		last = new Point(0, 0);
 		players = new ArrayList<Player>(2);
 		display = new Display();
@@ -188,11 +193,7 @@ public class CircusUI implements Observer {
 		PlateSky.getInstance().setAirShift(0);
 
 		final Composite composite = new Composite(shell, SWT.NONE);
-		Rectangle dispBounds = display.getBounds();
-		backgroundImg2 = new Image(display, new ImageData(CircusUI.class
-				.getResourceAsStream("space.png")).scaledTo(
-				dispBounds.width, dispBounds.height));
-		composite.setBackgroundImage(backgroundImg2);
+		currentComposite = composite;
 		composite.setLayout(new FormLayout());
 		FormData data = new FormData();
 		data.left = new FormAttachment(25, 0);
@@ -245,7 +246,7 @@ public class CircusUI implements Observer {
 		settingsComposite.setLayout(new GridLayout(2, false));
 		CLabel plates = new CLabel(settingsComposite, SWT.NONE);
 		plates.setFont(font);
-		plates.setText("Plate Rate");
+		plates.setText("Plate Spacing");
 		plates.setToolTipText("frequency of plates generated");
 		final Scale plateFrequency = new Scale(settingsComposite,
 				SWT.HORIZONTAL);
@@ -344,8 +345,8 @@ public class CircusUI implements Observer {
 		secondStep.setSelection(5);
 		secondStep.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				int selection = levelsScale.getSelection();
-				keyboardStep += selection;
+				int selection = secondStep.getSelection();
+				keyboardStep = selection;
 				secondPlayerStep.setText(keyboardStep + "");
 			}
 		});
@@ -354,7 +355,7 @@ public class CircusUI implements Observer {
 		connectLabel.setAlignment(SWT.CENTER);
 		connectLabel.setText("Network Game");
 		final Button connect = new Button(controlsComposite, SWT.PUSH);
-		connect.setText("Conect");
+		connect.setText("Connect");
 		connect.setFont(font);
 		connect.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		connect.addSelectionListener(new SelectionAdapter() {
@@ -380,7 +381,28 @@ public class CircusUI implements Observer {
 				new Thread(r).start();
 			}
 		});
-
+		final CLabel themeLabel = new CLabel(controlsComposite, SWT.NONE);
+		themeLabel.setFont(font);
+		themeLabel.setAlignment(SWT.CENTER);
+		themeLabel.setText("Choose Theme");
+		final Composite themeComposite = new Composite(controlsComposite, SWT.NONE);
+		RowLayout layout = new RowLayout();
+		layout.wrap = true;
+		themeComposite.setLayout(layout);
+		themeComposite.setFont(font);
+		themeComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
+		fillThemes(themeComposite);
+		currentComposite.setBackgroundImage(backgroundImg2);
+		Rectangle displayBounds = display.getBounds();
+		if (backgroundImg1 == null) {
+		backgroundImg2 = new Image(display,
+				new ImageData(CircusUI.class.getResourceAsStream("space.jpg"))
+				.scaledTo(displayBounds.width, displayBounds.height));
+		currentComposite.setBackgroundImage(backgroundImg2);
+		backgroundImg1 = new Image(display, new ImageData(CircusUI.class
+				.getResourceAsStream("space.png")).scaledTo(
+				canvasBounds.width, canvasBounds.height));
+		}
 		ExpandItem expandItem = new ExpandItem(prefrences, SWT.NONE);
 		expandItem.setText("Preferences");
 		expandItem.setControl(settingsComposite);
@@ -393,26 +415,46 @@ public class CircusUI implements Observer {
 		expandItem.setHeight(controlsComposite.computeSize(SWT.DEFAULT,
 				SWT.DEFAULT).y);
 		expandItem.setExpanded(false);
-		composite.addDisposeListener(new DisposeListener() {
-			@Override
-			public void widgetDisposed(DisposeEvent e) {
-				backgroundImg2.dispose();
+	}
+
+	private void fillThemes(Composite composite) {
+		try {
+			InputStream i = CircusUI.class.getResourceAsStream("themes.properties");
+			BufferedReader in = new BufferedReader(new InputStreamReader(i));
+			String load;;
+			while ((load = in.readLine()) != null) {
+				String name  = load.substring(load.lastIndexOf('-')+1);
+				final String startUpimage = load.substring(0, load.indexOf('-'));
+				final String customImage = load.substring(load.indexOf('-')+1, load.lastIndexOf('-'));
+				Button b = new Button(composite, SWT.PUSH);
+				b.setText(name);
+				b.setAlignment(SWT.CENTER);
+				b.setFont(font);
+				b.addSelectionListener(new SelectionAdapter() {
+					public void widgetSelected(SelectionEvent e) {
+						Rectangle displayBounds = display.getBounds();
+						backgroundImg2 = new Image(display,
+								new ImageData(CircusUI.class.getResourceAsStream(startUpimage))
+								.scaledTo(displayBounds.width, displayBounds.height));
+						currentComposite.setBackgroundImage(backgroundImg2);
+						backgroundImg1 = new Image(display, new ImageData(CircusUI.class
+								.getResourceAsStream(customImage)).scaledTo(
+								canvasBounds.width, canvasBounds.height));
+					}
+				});
 			}
-		});
-		currentComposite = composite;
+			in.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void customComposite() {
 		final Composite composite = new Composite(shell, SWT.NONE);
 		composite.setLayout(new FormLayout());
 		canvas = new Canvas(composite, SWT.DOUBLE_BUFFERED);
-		backgroundImg1 = new Image(display, new ImageData(CircusUI.class
-				.getResourceAsStream("space.jpg")).scaledTo(
-				canvasBounds.width, canvasBounds.height));
-		Rectangle dispBounds = display.getBounds();
-		backgroundImg2 = new Image(display, new ImageData(CircusUI.class
-				.getResourceAsStream("space.png")).scaledTo(
-				dispBounds.width - canvasBounds.width, canvasBounds.height / 3));
 		stickColor = new Color(display, 219, 82, 16);
 		Color white = display.getSystemColor(SWT.COLOR_WHITE);
 		Color black = display.getSystemColor(SWT.COLOR_BLACK);
@@ -437,8 +479,6 @@ public class CircusUI implements Observer {
 					iter.next().draw(e.gc);
 				for (int i = 0; i < bars.length; i++)
 					bars[i].draw(e.gc);
-				if (client != null && client.isWorking())
-					System.out.println("client hoppa");
 			}
 		});
 		canvas.addMouseMoveListener(new MouseMoveListener() {
@@ -505,8 +545,6 @@ public class CircusUI implements Observer {
 			@Override
 			public void widgetDisposed(DisposeEvent e) {
 				cursor.dispose();
-				backgroundImg1.dispose();
-				backgroundImg2.dispose();
 				stickColor.dispose();
 				shell.removeKeyListener(secondPlayerController);
 				display.timerExec(-1, updateRunnable);
