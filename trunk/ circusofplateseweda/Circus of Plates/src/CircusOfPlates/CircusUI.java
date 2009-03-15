@@ -1,13 +1,20 @@
 package CircusOfPlates;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Random;
+
+import javax.media.Manager;
+import javax.media.MediaLocator;
+import javax.media.NoPlayerException;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -53,6 +60,7 @@ import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Shell;
+
 
 /**
  * Graphical representation of the game manipulated by arrays data structures
@@ -396,11 +404,11 @@ public class CircusUI implements Observer {
 		Rectangle displayBounds = display.getBounds();
 		if (backgroundImg1 == null) {
 		backgroundImg2 = new Image(display,
-				new ImageData(CircusUI.class.getResourceAsStream("space.jpg"))
+				new ImageData(CircusUI.class.getResourceAsStream("space.png"))
 				.scaledTo(displayBounds.width, displayBounds.height));
 		currentComposite.setBackgroundImage(backgroundImg2);
 		backgroundImg1 = new Image(display, new ImageData(CircusUI.class
-				.getResourceAsStream("space.png")).scaledTo(
+				.getResourceAsStream("space.jpg")).scaledTo(
 				canvasBounds.width, canvasBounds.height));
 		}
 		ExpandItem expandItem = new ExpandItem(prefrences, SWT.NONE);
@@ -426,7 +434,9 @@ public class CircusUI implements Observer {
 				String name  = load.substring(load.lastIndexOf('-')+1);
 				final String startUpimage = load.substring(0, load.indexOf('-'));
 				final String customImage = load.substring(load.indexOf('-')+1, load.lastIndexOf('-'));
-				Button b = new Button(composite, SWT.PUSH);
+				Button b = new Button(composite, SWT.RADIO);
+				if (name.equalsIgnoreCase("Space"))
+					b.setSelection(true);
 				b.setText(name);
 				b.setAlignment(SWT.CENTER);
 				b.setFont(font);
@@ -452,6 +462,7 @@ public class CircusUI implements Observer {
 	}
 
 	private void customComposite() {
+		final javax.media.Player player = startMedia("tango.mp3");
 		final Composite composite = new Composite(shell, SWT.NONE);
 		composite.setLayout(new FormLayout());
 		canvas = new Canvas(composite, SWT.DOUBLE_BUFFERED);
@@ -546,6 +557,7 @@ public class CircusUI implements Observer {
 			public void widgetDisposed(DisposeEvent e) {
 				cursor.dispose();
 				stickColor.dispose();
+				player.stop();
 				shell.removeKeyListener(secondPlayerController);
 				display.timerExec(-1, updateRunnable);
 				display.timerExec(-1, changeImages);
@@ -627,6 +639,8 @@ public class CircusUI implements Observer {
 		secondPlayer.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
+				if (players.size() == 2)
+					return;
 				Player player = new Player(CircusUI.this, "Mohammed",
 						clown1Img, stickColor, new Point(0,
 								display.getBounds().height - 40));
@@ -714,8 +728,13 @@ public class CircusUI implements Observer {
 	}
 
 	private void endGameComposite() {
+		final Rectangle dispBounds = display.getBounds();
 		final Composite composite = new Composite(shell, SWT.NONE);
 		composite.setLayout(new FillLayout());
+		ImageData clownDat = new ImageData(CircusUI.class.getResourceAsStream("clown loose.jpg"))
+			.scaledTo(dispBounds.width, dispBounds.height);
+		clownDat.alpha = 170;
+		final Image clownImg = new Image(display, clownDat);
 		final Font bigFont = new Font(display, "Comic Sans MS", 80, SWT.BOLD);
 		final Font medFont = new Font(display, "Comic Sans MS", 50, SWT.BOLD);
 
@@ -744,32 +763,85 @@ public class CircusUI implements Observer {
 			System.out.println(e.getMessage());
 			return;
 		}
-
-		Canvas canvas = new Canvas(composite, SWT.DOUBLE_BUFFERED);
-		canvas.addPaintListener(new PaintListener() {
-			private Rectangle bounds = display.getBounds();
+		final Canvas canvas = new Canvas(composite, SWT.DOUBLE_BUFFERED);
+		gc = new GC(canvas);
+		if (players.size() == 2)
+			gc.setFont(medFont);
+		else
+			gc.setFont(bigFont);
+		final Point pt = gc.stringExtent("Game over     ");
+		if (players.size() == 2)
+			pt.y *= 3;
+		else
+			pt.y *= 2;
+		final Random gen = new Random();
+		int x = Math.abs(gen.nextInt() % (dispBounds.width - pt.x));
+		int y = Math.abs(gen.nextInt() % (dispBounds.height - pt.y));
+		final Point location = new Point(x, y);
+		// animator runnable to animate message movement
+		final Runnable mover = new Runnable() {
+			boolean right = gen.nextBoolean();
+			boolean up = gen.nextBoolean();
 
 			@Override
-			public void paintControl(PaintEvent e) {
-				GC gc = e.gc;
-				gc.setForegroundPattern(pattern);
+			public void run() {
+				if (right) {
+					location.x += 5;
+					if (location.x + pt.x >= dispBounds.width - 35)
+						right = false;
+				} else {
+					location.x -= 5;
+					if (location.x <= 0)
+						right = true;
+				}
+				if (up) {
+					location.y -= 5;
+					if (location.y <= 0)
+						up = false;
+				} else {
+					location.y += 5;
+					if (location.y + pt.y >= dispBounds.height - 30)
+						up = true;
+				}
+				canvas.redraw();
+				display.timerExec(10, this);
+			}
+		};
+		canvas.addPaintListener(new PaintListener() {
+			private Image buffer;
+			{
+				buffer = new Image(display, pt.x, pt.y);
+				GC gc = new GC(buffer);
 				if (players.size() == 2)
 					gc.setFont(medFont);
 				else
 					gc.setFont(bigFont);
+				gc.setForegroundPattern(pattern);
 				String msg = "Game Over\n" + players.get(0).toString();
 				if (players.size() == 2)
 					msg = "Game Over" + players.get(0).toString() + "\n"
 							+ players.get(1).toString();
-				Point pt = gc.stringExtent(msg);
-				gc.drawString(msg, bounds.width / 2 - pt.x / 2, bounds.height
-						/ 2 - pt.y / 2);
+				gc.drawString(msg, 0, 0);
+				ImageData dat = buffer.getImageData();
+				dat.transparentPixel = dat.getPixel(0, 0);
+				buffer.dispose();
+				buffer = new Image(display, dat);
+			}
+			@Override
+			public void paintControl(PaintEvent e) {
+				GC gc = e.gc;
+				gc.drawImage(clownImg, 0, 0);
+				gc.drawImage(buffer, location.x, location.y);
 			}
 		});
+		display.timerExec(10, mover);
+
 		composite.addDisposeListener(new DisposeListener() {
 			@Override
 			public void widgetDisposed(DisposeEvent e) {
+				display.timerExec(-1, mover);
 				bigFont.dispose();
+				clownImg.dispose();
 				pattern.dispose();
 				medFont.dispose();
 			}
@@ -788,5 +860,28 @@ public class CircusUI implements Observer {
 		PlateSky.getInstance().clear();
 		customComposite();
 		shell.layout();
+	}
+	private javax.media.Player startMedia(String path) {
+		MediaLocator loc;
+		javax.media.Player player = null;
+		File file = new File(path);
+		// Create a Medialocator that represents our clip.
+		// This should be a file URL, so first we create
+		// an object representing the file and then we
+		// get the URL from that File object
+		try {
+			loc = new MediaLocator(file.toURI().toURL().toExternalForm());
+			// Create the JMF Player for the audio file
+			player = Manager.createPlayer(loc);
+			// Play it
+			player.start();
+		} catch (MalformedURLException e1) {
+			e1.printStackTrace();
+		} catch (NoPlayerException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return player;
 	}
 }

@@ -303,7 +303,7 @@ public class Player extends Observable {
 	 * @return a string representation of the state of the player
 	 */
 	public String toString() {
-		return "Player: "+name+"\nScore: " + score;
+		return "Player: "+ name + "\nScore: " + score;
 	}
 
 	/**
