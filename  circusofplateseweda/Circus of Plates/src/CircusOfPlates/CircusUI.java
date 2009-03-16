@@ -199,6 +199,7 @@ public class CircusUI implements Observer {
 	private void startUpComposite() {
 		PlateSky.getInstance().setRepeatTimes(0);
 		PlateSky.getInstance().setAirShift(0);
+		barLevelNum = 2;
 
 		final Composite composite = new Composite(shell, SWT.NONE);
 		currentComposite = composite;
